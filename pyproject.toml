@@ -1,7 +1,7 @@
 [project]
 name = "msgq"
 version = "0.0.1"
-description = "Code powering the comma.ai panda"
+description = "Code powering the comma.ai messaging"
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 license = {text = "MIT"}
@@ -14,11 +14,15 @@ classifiers = [
 dependencies = [
   "setuptools",  # for distutils
   "Cython",
+  "numpy",
+]
+
+[project.optional-dependencies]
+dev = [
   "scons",
   "ruff",
   "parameterized",
   "coverage",
-  "numpy",
   "pytest",
   "pytest-retry",
   "cppcheck",
