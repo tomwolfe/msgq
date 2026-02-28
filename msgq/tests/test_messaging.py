@@ -45,7 +45,6 @@ class TestPubSubSockets:
         for rec_msg, sent_msg in zip(recvd_msgs, sent_msgs):
           assert rec_msg == sent_msg
 
-  @pytest.mark.flaky(retries=3, delay=1)
   def test_receive_timeout(self):
     sock = random_sock()
     timeout = random.randrange(200)
