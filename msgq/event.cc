@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cstring>
 #include <cstdlib>
+#include <cerrno>
 #include <iostream>
 #include <string>
 #include <exception>
@@ -149,7 +150,9 @@ void Event::wait(int timeout_sec) const {
   sigdelset(&signals, SIGTERM);
   sigdelset(&signals, SIGQUIT);
 
-  event_count = ppoll(&fds, 1, timeout_sec < 0 ? nullptr : &timeout, &signals);
+  do {
+    event_count = ppoll(&fds, 1, timeout_sec < 0 ? nullptr : &timeout, &signals);
+  } while (event_count < 0 && errno == EINTR);
 
   if (event_count == 0) {
     throw std::runtime_error("Event timed out pid: " + std::to_string(getpid()));
@@ -194,7 +197,10 @@ int Event::wait_for_one(const std::vector<Event>& events, int timeout_sec) {
   sigdelset(&signals, SIGTERM);
   sigdelset(&signals, SIGQUIT);
 
-  int event_count = ppoll(fds, events.size(), timeout_sec < 0 ? nullptr : &timeout, &signals);
+  int event_count;
+  do {
+    event_count = ppoll(fds, events.size(), timeout_sec < 0 ? nullptr : &timeout, &signals);
+  } while (event_count < 0 && errno == EINTR);
 
   if (event_count == 0) {
     throw std::runtime_error("Event timed out pid: " + std::to_string(getpid()));
